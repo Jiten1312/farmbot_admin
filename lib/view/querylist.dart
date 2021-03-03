@@ -1,7 +1,9 @@
 import 'dart:math';
 
+import 'package:farmbot_admin/controller/kisandb.dart';
 import 'package:farmbot_admin/model/kisanquery.dart';
 import 'package:farmbot_admin/view/addresponse.dart';
+import 'package:farmbot_admin/view/querytile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -19,6 +21,7 @@ class _QueryListState extends State<QueryList> {
   @override
   Widget build(BuildContext context) {
     List<KisanQuery> list = getList(plant_name);
+    // List<KisanQuery> list = widget.queryList;
     List<String> header = [
       'Sector',
       'Category',
@@ -35,69 +38,109 @@ class _QueryListState extends State<QueryList> {
         appBar: AppBar(
           title: Text('Farmbot Admin'),
         ),
-        body: Column(
-          children: [
-            askPlant(),
-            DataTable(
-                columns: header.map((e) => DataColumn(label: Text(e))).toList(),
-                rows: list
-                    .getRange((cnt - 1) * 10, min(cnt * 10, list.length - 1))
-                    .map((e) => DataRow(cells: [
-                          DataCell(Text(e.category)),
-                          DataCell(Text(e.crop)),
-                          DataCell(Text(e.crop)),
-                          DataCell(Text(e.query_type)),
-                          DataCell(Text(e.query_text)),
-                          DataCell(Text(e.response)),
-                          DataCell(Text(e.state)),
-                          DataCell(Text(e.district)),
-                          DataCell(Text(e.block)),
-                          DataCell(IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => AddResponse(
-                                          kisanQuery: e,
-                                          flag: true,
-                                        )));
-                              }))
-                        ]))
-                    .toList()),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+        body: Container(
+          child: SingleChildScrollView(
+            child: Column(
               children: [
-                IconButton(
-                    icon: Icon(Icons.skip_previous),
-                    onPressed: () {
-                      setState(() {
-                        if (cnt != 1) {
-                          this.cnt = this.cnt - 1;
-                        }
-                      });
-                    }),
-                Text(cnt.toString()),
-                IconButton(
-                    icon: Icon(Icons.skip_next),
-                    onPressed: () {
-                      setState(() {
-                        // print(list.length);
-                        if (list.length > (cnt) * 10) {
-                          cnt = cnt + 1;
-                        }
-                      });
-                    }),
+                askPlant(),
+                Container(height: 650, child: QueryTile(list: list)),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     IconButton(
+                //         icon: Icon(Icons.skip_previous),
+                //         onPressed: () {
+                //           setState(() {
+                //             if (cnt != 1) {
+                //               this.cnt = this.cnt - 1;
+                //             }
+                //           });
+                //         }),
+                //     Text(cnt.toString()),
+                //     IconButton(
+                //         icon: Icon(Icons.skip_next),
+                //         onPressed: () {
+                //           setState(() {
+                //             // print(list.length);
+                //             if (list.length > (cnt) * 10) {
+                //               cnt = cnt + 1;
+                //             }
+                //           });
+                //         }),
+                //   ],
+                // )
               ],
-            )
-          ],
+            ),
+          ),
         ));
+    // body: Column(
+    //   children: [
+    //     askPlant(),
+    //     DataTable(
+    //         columns: header.map((e) => DataColumn(label: Text(e))).toList(),
+    //         rows: list
+    //             .getRange((cnt - 1) * 10, min(cnt * 10, list.length - 1))
+    //             .map((e) => DataRow(cells: [
+    //                   DataCell(Text(e.category)),
+    //                   DataCell(Text(e.crop)),
+    //                   DataCell(Text(e.crop)),
+    //                   DataCell(Text(e.query_type)),
+    //                   DataCell(Text(e.query_text)),
+    //                   DataCell(Text(e.response)),
+    //                   DataCell(Text(e.state)),
+    //                   DataCell(Text(e.district)),
+    //                   DataCell(Text(e.block)),
+    //                   DataCell(IconButton(
+    //                       icon: Icon(Icons.edit),
+    //                       onPressed: () {
+    //                         Navigator.of(context).push(MaterialPageRoute(
+    //                             builder: (context) => AddResponse(
+    //                                   kisanQuery: e,
+    //                                   flag: true,
+    //                                 )));
+    //                       }))
+    //                 ]))
+    //             .toList()),
+    //     Row(
+    //       mainAxisAlignment: MainAxisAlignment.center,
+    //       children: [
+    //         IconButton(
+    //             icon: Icon(Icons.skip_previous),
+    //             onPressed: () {
+    //               setState(() {
+    //                 if (cnt != 1) {
+    //                   this.cnt = this.cnt - 1;
+    //                 }
+    //               });
+    //             }),
+    //         Text(cnt.toString()),
+    //         IconButton(
+    //             icon: Icon(Icons.skip_next),
+    //             onPressed: () {
+    //               setState(() {
+    //                 // print(list.length);
+    //                 if (list.length > (cnt) * 10) {
+    //                   cnt = cnt + 1;
+    //                 }
+    //               });
+    //             }),
+    //       ],
+    //     )
+    //   ],
+    // ));
   }
 
   List<KisanQuery> getList(String plant) {
     if (plant == null) {
-      return widget.queryList;
+      List<KisanQuery> nList = widget.queryList
+          .where((e) => e.query_text != "સામાન્ય માહિતી")
+          .toList();
+      return nList;
     } else {
-      List<KisanQuery> nList =
-          widget.queryList.where((e) => e.crop == this.plant_name).toList();
+      List<KisanQuery> nList = widget.queryList
+          .where((e) =>
+              e.crop == this.plant_name && e.query_text != "સામાન્ય માહિતી")
+          .toList();
       return nList;
     }
   }
@@ -111,6 +154,7 @@ class _QueryListState extends State<QueryList> {
           isExpanded: true,
           onChanged: (String value) {
             setState(() {
+              cnt = 1;
               this.plant_name = value;
             });
           },

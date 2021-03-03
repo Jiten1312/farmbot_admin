@@ -9,9 +9,10 @@ class KisanQuery {
       state,
       district,
       block;
-
+  bool isExpanded;
   KisanQuery(
-      {this.block,
+      {this.isExpanded,
+      this.block,
       this.category,
       this.crop,
       this.district,

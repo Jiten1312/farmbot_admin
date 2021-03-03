@@ -34,7 +34,7 @@ class _HomeState extends State<Home> {
                   children: [
                     Container(
                       height: 40,
-                      width: MediaQuery.of(context).size.width / 5,
+                      width: MediaQuery.of(context).size.width / 2.5,
                       child: RaisedButton(
                         child: Text('Get Kisan Query'),
                         onPressed: () async {
@@ -60,7 +60,7 @@ class _HomeState extends State<Home> {
                     SizedBox(width: 40),
                     Container(
                       height: 40,
-                      width: MediaQuery.of(context).size.width / 5,
+                      width: MediaQuery.of(context).size.width / 2.5,
                       child: RaisedButton(
                         child: Text('Get Fallbacks'),
                         onPressed: () async {

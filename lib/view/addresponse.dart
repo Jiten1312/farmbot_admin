@@ -78,13 +78,17 @@ class _AddResponseState extends State<AddResponse> {
                     askState(),
                   ]),
                   Padding(
-                    padding: const EdgeInsets.only(left: 17, right: 590),
+                    padding: const EdgeInsets.only(
+                      left: 17,
+                    ),
                     child: TextFormField(
                       decoration: InputDecoration(hintText: 'query text'),
-                      initialValue: (widget.fallback!=null) ? widget.fallback.query:widget.kisanQuery.query_text,
+                      initialValue: (widget.fallback != null)
+                          ? widget.fallback.query
+                          : widget.kisanQuery.query_text,
                       onSaved: (value) {
                         setState(() {
-                          this.queryText = widget.fallback.query;
+                          this.queryText = value;
                         });
                       },
                       validator: (value) {
@@ -93,9 +97,14 @@ class _AddResponseState extends State<AddResponse> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 17, right: 590),
+                    padding: const EdgeInsets.only(
+                      left: 17,
+                    ),
                     child: TextFormField(
                       decoration: InputDecoration(hintText: 'crop'),
+                      initialValue: (widget.kisanQuery != null)
+                          ? widget.kisanQuery.crop
+                          : '',
                       onSaved: (value) {
                         setState(() {
                           crop = value;
@@ -107,9 +116,14 @@ class _AddResponseState extends State<AddResponse> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 17, right: 590),
+                    padding: const EdgeInsets.only(
+                      left: 17,
+                    ),
                     child: TextFormField(
                       decoration: InputDecoration(hintText: 'Query Type'),
+                      initialValue: (widget.kisanQuery != null)
+                          ? widget.kisanQuery.query_type
+                          : '',
                       onSaved: (value) {
                         setState(() {
                           queryType = value;
@@ -121,9 +135,14 @@ class _AddResponseState extends State<AddResponse> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 17, right: 590),
+                    padding: const EdgeInsets.only(
+                      left: 17,
+                    ),
                     child: TextFormField(
                       decoration: InputDecoration(hintText: 'Response'),
+                      initialValue: (widget.kisanQuery != null)
+                          ? widget.kisanQuery.response
+                          : '',
                       onSaved: (value) {
                         setState(() {
                           response = value;
@@ -135,9 +154,14 @@ class _AddResponseState extends State<AddResponse> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 17, right: 590),
+                    padding: const EdgeInsets.only(
+                      left: 17,
+                    ),
                     child: TextFormField(
                       decoration: InputDecoration(hintText: 'District'),
+                      initialValue: (widget.kisanQuery != null)
+                          ? widget.kisanQuery.district
+                          : '',
                       onSaved: (value) {
                         setState(() {
                           district = value;
@@ -149,9 +173,14 @@ class _AddResponseState extends State<AddResponse> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 17, right: 590),
+                    padding: const EdgeInsets.only(
+                      left: 17,
+                    ),
                     child: TextFormField(
                       decoration: InputDecoration(hintText: 'block'),
+                      initialValue: (widget.kisanQuery != null)
+                          ? widget.kisanQuery.block
+                          : '',
                       onSaved: (value) {
                         setState(() {
                           block = value;
@@ -184,6 +213,7 @@ class _AddResponseState extends State<AddResponse> {
                       }
                       if (_formKey.currentState.validate()) {
                         _formKey.currentState.save();
+                        print(response);
                         KisanQuery kisanQuery = new KisanQuery(
                             query_text: queryText,
                             query_type: queryType,
@@ -194,18 +224,32 @@ class _AddResponseState extends State<AddResponse> {
                             category: category,
                             crop: crop,
                             block: block);
-                        bool res = await KisanDb().addQuery(kisanQuery);
-                        if (res) {
-                          bool del =
-                              await FallbackDb().delete(id: widget.fallback.id);
-                          print(del);
-                          setState(() {
-                            alert = 'Response Added Succsessfully';
-                          });
+                        if (widget.flag == false) {
+                          bool res = await KisanDb().addQuery(kisanQuery);
+                          if (res) {
+                            bool del = await FallbackDb()
+                                .delete(id: widget.fallback.id);
+                            print(del);
+                            setState(() {
+                              alert = 'Response Added Succsessfully';
+                            });
+                          } else {
+                            setState(() {
+                              alert = 'Internal Error Accoured';
+                            });
+                          }
                         } else {
-                          setState(() {
-                            alert = 'Internal Error Accoured';
-                          });
+                          bool res = await KisanDb()
+                              .update(kisanQuery, widget.kisanQuery.id);
+                          if (res) {
+                            setState(() {
+                              alert = 'Response Updated Succsessfully';
+                            });
+                          } else {
+                            setState(() {
+                              alert = 'Internal Error Accoured';
+                            });
+                          }
                         }
                       }
                     },
@@ -256,6 +300,7 @@ class _AddResponseState extends State<AddResponse> {
         onChanged: (String value) {
           setState(() {
             this.sector = value;
+            this.category = null;
           });
         },
         items: sectors.map((String sector) {
