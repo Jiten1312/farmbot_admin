@@ -23,7 +23,7 @@ class _FallbackListState extends State<FallbackList> {
           title: Text('Farmbot Admin'),
         ),
         body: Container(
-          child: Text('No Fallbacks'),
+          child: Text('No Data'),
         ),
       );
     } else {

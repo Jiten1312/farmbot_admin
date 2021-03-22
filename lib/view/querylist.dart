@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:farmbot_admin/controller/kisandb.dart';
 import 'package:farmbot_admin/model/kisanquery.dart';
 import 'package:farmbot_admin/view/addresponse.dart';
+import 'package:farmbot_admin/view/csv.dart';
 import 'package:farmbot_admin/view/querytile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -42,8 +43,46 @@ class _QueryListState extends State<QueryList> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                askPlant(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    askPlant(),
+                    SizedBox(width: 5),
+                    IconButton(
+                        icon: Icon(Icons.refresh),
+                        onPressed: () {
+                          setState(() {});
+                        })
+                  ],
+                ),
                 Container(height: 650, child: QueryTile(list: list)),
+                SizedBox(height: 5),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(list.length.toString() + ' queries returned',
+                        style: TextStyle(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold)),
+                    SizedBox(width: 5),
+                    InkWell(
+                      onTap: () async {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => CSV(list: list)));
+                        print(list.length);
+                      },
+                      child: Row(
+                        children: [
+                          Text('export',
+                              style: TextStyle(
+                                  color: Colors.blueAccent,
+                                  fontWeight: FontWeight.bold)),
+                          Icon(Icons.file_download)
+                        ],
+                      ),
+                    )
+                  ],
+                ),
                 // Row(
                 //   mainAxisAlignment: MainAxisAlignment.center,
                 //   children: [
@@ -139,7 +178,8 @@ class _QueryListState extends State<QueryList> {
     } else {
       List<KisanQuery> nList = widget.queryList
           .where((e) =>
-              e.crop == this.plant_name && e.query_text != "સામાન્ય માહિતી")
+              RegExp(plant).hasMatch(e.crop) &&
+              e.query_text != "સામાન્ય માહિતી")
           .toList();
       return nList;
     }
@@ -160,7 +200,7 @@ class _QueryListState extends State<QueryList> {
           },
           items: widget.plantList.map((String plant) {
             return DropdownMenuItem<String>(
-              value: plant,
+              value: (plant == 'All') ? '' : plant,
               child: Row(
                 children: <Widget>[
                   SizedBox(

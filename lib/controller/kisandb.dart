@@ -68,7 +68,7 @@ class KisanDb {
     //print(response.body);
     if (response.statusCode == 200) {
       List receivedMap = json.decode(response.body)['data'];
-      print(receivedMap[0]);
+      // print(receivedMap[0]);
       return receivedMap.map((e) {
         return KisanQuery(
             id: e['_id'],

@@ -46,10 +46,14 @@ class _HomeState extends State<Home> {
                           //     builder: (context) => Provider.value(
                           //         value: fallbacks, child: FallbackList())));
                           dynamic plantlist = await KisanDb().getPlants();
+                          List<String> plants = plantlist;
+                          plants.add('All');
                           // print(plantlist);
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) =>
-                                  QueryList(queryList: queryList,plantList: plantlist,)));
+                              builder: (context) => QueryList(
+                                    queryList: queryList,
+                                    plantList: plants,
+                                  )));
                           setState(() {
                             isLoading = false;
                             queryList = result;

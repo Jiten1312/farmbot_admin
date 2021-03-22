@@ -9,6 +9,7 @@ import 'package:farmbot_admin/model/mystate.dart';
 import 'package:farmbot_admin/model/sector.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class AddResponse extends StatefulWidget {
   Fallback fallback;
@@ -34,6 +35,10 @@ class _AddResponseState extends State<AddResponse> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    KisanQuery k;
+    if (widget.flag == true) {
+      k = Provider.of<KisanQuery>(context);
+    }
     return Scaffold(
       appBar: AppBar(title: Text('Farmbot Admin')),
       body: ListView(
@@ -85,7 +90,7 @@ class _AddResponseState extends State<AddResponse> {
                       decoration: InputDecoration(hintText: 'query text'),
                       initialValue: (widget.fallback != null)
                           ? widget.fallback.query
-                          : widget.kisanQuery.query_text,
+                          : k.query_text,
                       onSaved: (value) {
                         setState(() {
                           this.queryText = value;
@@ -102,9 +107,7 @@ class _AddResponseState extends State<AddResponse> {
                     ),
                     child: TextFormField(
                       decoration: InputDecoration(hintText: 'crop'),
-                      initialValue: (widget.kisanQuery != null)
-                          ? widget.kisanQuery.crop
-                          : '',
+                      initialValue: (k != null) ? k.crop : '',
                       onSaved: (value) {
                         setState(() {
                           crop = value;
@@ -121,9 +124,7 @@ class _AddResponseState extends State<AddResponse> {
                     ),
                     child: TextFormField(
                       decoration: InputDecoration(hintText: 'Query Type'),
-                      initialValue: (widget.kisanQuery != null)
-                          ? widget.kisanQuery.query_type
-                          : '',
+                      initialValue: (k != null) ? k.query_type : '',
                       onSaved: (value) {
                         setState(() {
                           queryType = value;
@@ -140,9 +141,7 @@ class _AddResponseState extends State<AddResponse> {
                     ),
                     child: TextFormField(
                       decoration: InputDecoration(hintText: 'Response'),
-                      initialValue: (widget.kisanQuery != null)
-                          ? widget.kisanQuery.response
-                          : '',
+                      initialValue: (k != null) ? k.response : '',
                       onSaved: (value) {
                         setState(() {
                           response = value;
@@ -159,9 +158,7 @@ class _AddResponseState extends State<AddResponse> {
                     ),
                     child: TextFormField(
                       decoration: InputDecoration(hintText: 'District'),
-                      initialValue: (widget.kisanQuery != null)
-                          ? widget.kisanQuery.district
-                          : '',
+                      initialValue: (k != null) ? k.district : '',
                       onSaved: (value) {
                         setState(() {
                           district = value;
@@ -178,9 +175,7 @@ class _AddResponseState extends State<AddResponse> {
                     ),
                     child: TextFormField(
                       decoration: InputDecoration(hintText: 'block'),
-                      initialValue: (widget.kisanQuery != null)
-                          ? widget.kisanQuery.block
-                          : '',
+                      initialValue: (k != null) ? k.block : '',
                       onSaved: (value) {
                         setState(() {
                           block = value;
@@ -211,7 +206,7 @@ class _AddResponseState extends State<AddResponse> {
                           alert = 'All fields are required';
                         });
                       }
-                      if (_formKey.currentState.validate()) {
+                      if (_formKey.currentState.validate() && alert == null) {
                         _formKey.currentState.save();
                         print(response);
                         KisanQuery kisanQuery = new KisanQuery(
@@ -239,9 +234,9 @@ class _AddResponseState extends State<AddResponse> {
                             });
                           }
                         } else {
-                          bool res = await KisanDb()
-                              .update(kisanQuery, widget.kisanQuery.id);
+                          bool res = await KisanDb().update(kisanQuery, k.id);
                           if (res) {
+                            k.update(kisanQuery);
                             setState(() {
                               alert = 'Response Updated Succsessfully';
                             });
